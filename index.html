@@ -81,20 +81,46 @@
   </footer>
 
   <!-- Loader: conecta layout + lógica + dataset externo -->
-  <script type="module">
-    import * as Normalizer from './normalizer.js';
-    import * as Matcher from './matcher.js';
-    import { setupUI } from './ui.js';  
+<script type="module">
+  // Imports corretos (arquivos na raiz do repo)
+  import * as Normalizer from './normalizer.js';
+  import * as Matcher from './matcher.js';
+  import { setupUI } from './ui.js';
 
-    // carrega dataset externo (o seu JSON completo com 12.320 entradas)
-    const resp = await fetch('./data/cutter-sanborn.json', { cache: 'no-store' });
-    const DATA = await resp.json();
-    const index = Matcher.buildIndex(DATA, Normalizer);
-    setupUI({ index, Normalizer, Matcher });
+  const bestCode = document.getElementById('bestCode');
+  const bestKey  = document.getElementById('bestKey');
+  const explain  = document.getElementById('explain');
 
-    // fallback para webviews que bloqueiam JS
-    const ok = typeof DATA?.length === 'number';
-    document.getElementById('wvWarn').style.display = ok ? 'none' : 'block';
-  </script>
+  async function boot(){
+    try {
+      // Caminho relativo à raiz do site do GitHub Pages: /cutter-sanborn/data/cutter-sanborn.json
+      const resp = await fetch('./data/cutter-sanborn.json?cachebust=' + Date.now(), { cache: 'no-store' });
+      if (!resp.ok) throw new Error('Falha ao carregar data/cutter-sanborn.json (' + resp.status + ')');
+      const DATA = await resp.json();
+      if (!Array.isArray(DATA) || DATA.length === 0) throw new Error('Dataset vazio ou inválido');
+
+      // Cria índice usando o normalizador (autor por padrão)
+      const index = Matcher.buildIndex(DATA, Normalizer);
+      if (!Array.isArray(index) || index.length === 0) throw new Error('Índice não foi criado');
+
+      // Liga a UI
+      setupUI({ index, Normalizer, Matcher });
+
+      // (opcional) expõe um teste rápido no console:
+      window.__dbg = (s) => {
+        const n = Normalizer.fromAuthor(String(s||''));
+        const m = Matcher.findBest(n, index);
+        console.log({query:s, norm:n, match:m});
+        return m;
+      };
+    } catch (err) {
+      console.error(err);
+      if (bestCode) bestCode.textContent = '—';
+      if (bestKey)  bestKey.textContent  = 'Erro ao carregar dados';
+      if (explain)  explain.textContent  = String(err.message || err);
+    }
+  }
+  boot();
+</script>
 </body>
 </html>

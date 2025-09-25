@@ -8,128 +8,97 @@
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
-  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <a class="skip-link" href="#busca">Pular para a busca</a>
 
-  <header class="wrap app-header" role="banner">
+  <header class="wrap head" role="banner" aria-label="Cabeçalho">
     <div class="brand">
       <div class="logo" aria-hidden="true">C</div>
-      <h1 class="title">Cutter–Sanborn • Módulo de Cutter</h1>
+      <h1>Cutter–Sanborn • Busca rápida</h1>
     </div>
   </header>
 
-  <main id="conteudo" class="wrap" role="main">
-    <section class="panel intro" aria-labelledby="intro-title">
-      <h2 id="intro-title">Como usar</h2>
-      <p>Informe o <strong>sobrenome do 1º autor</strong> <em>ou</em> o <strong>título sem artigo inicial</strong>. A busca aplica normalização (acentos/pontuação), trata <code>St./Ste.</code> → <em>Saint/Sainte</em>, <code>Mc/M’</code> → <em>Mac</em>, converte dígitos em palavras e trunca a 13 caracteres. O pareamento usa a regra do <strong>anterior imediato</strong> quando não houver entrada exata.</p>
-      <p class="muted small">Observação: sufixos como <em>work mark</em> e regras de biografias/literatura podem ser ativados depois (a lógica fica no front-end sem precisar editar a tabela).</p>
+  <main class="wrap" role="main">
+    <section class="intro" aria-labelledby="regras-title">
+      <h2 id="regras-title">Regras rápidas de aplicação</h2>
+      <p class="tip">
+        Regra prática: até 3 autores (inclusive entidade coletiva) → <strong>entre pelo 1º autor</strong> (sobrenome).
+        Se a obra for entrar <strong>pelo título</strong>, digite o título <em>sem</em> artigos iniciais.
+      </p>
+
+      <table role="table" aria-describedby="regras-title">
+        <thead>
+          <tr><th scope="col">CASO</th><th scope="col">CUTTER PARA…</th><th scope="col">INICIAL DA OBRA?</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Até 3 autores <span class="small">(inclusive entidades coletivas)</span></td><td>1º autor / entidade</td><td>sim</td></tr>
+          <tr><td>+ 3 autores, coletâneas (ed., org., comp.), autoria desconhecida, audiovisual, recurso contínuo, obras sagradas &amp; evento</td><td>título</td><td>não</td></tr>
+          <tr><td>Crítica e análise de personalidade</td><td>criticado</td><td><span class="kbd">Z</span></td></tr>
+          <tr><td>Biografia</td><td>biografado</td><td>inicial do biógrafo</td></tr>
+          <tr><td>Autobiografia</td><td>biografado</td><td><span class="kbd">a</span></td></tr>
+          <tr><td>Escritos sagrados</td><td>tradutor</td><td>não</td></tr>
+          <tr><td>Legislação</td><td>jurisdição</td><td>sim</td></tr>
+        </tbody>
+      </table>
     </section>
 
-    <section class="panel search" aria-labelledby="busca-title">
-      <h2 id="busca-title">Buscar Cutter</h2>
+    <section class="search" aria-labelledby="busca-title">
+      <h2 id="busca-title">Buscar notação de autor</h2>
 
-      <form id="formBusca" novalidate>
-        <fieldset class="field-group" aria-describedby="modo-ajuda">
-          <legend>Modo de entrada</legend>
-          <div class="radios">
-            <label class="radio"><input type="radio" name="modo" value="autor" checked> Autor (padrão)</label>
-            <label class="radio"><input type="radio" name="modo" value="titulo"> Título (remove artigo inicial)</label>
-          </div>
-          <p id="modo-ajuda" class="muted small">No modo <em>Título</em>, artigos iniciais como “O, A, The, El, Le…” são ignorados na normalização.</p>
-        </fieldset>
-
-        <div class="grid-2">
-          <div class="field">
-            <label for="autor">Autor (Sobrenome, Prenome)</label>
-            <input id="autor" name="autor" type="text" inputmode="latin-name" autocomplete="off" spellcheck="false" placeholder="Ex.: Escorel, João; Saint-Exupéry; O’Neill" aria-describedby="autor-ajuda" />
-            <div id="autor-ajuda" class="muted small">Se houver vírgula, usaremos o trecho antes da vírgula como sobrenome.</div>
-          </div>
-
-          <div class="field">
-            <label for="titulo">Título (sem artigo inicial)</label>
-            <input id="titulo" name="titulo" type="text" autocomplete="off" spellcheck="false" placeholder="Ex.: Vivências; História da Ciência" />
+      <div class="controls" id="busca">
+        <div class="field">
+          <label for="q">Digite o sobrenome do 1º autor <span class="small">ou</span> o título (sem artigos iniciais)</label>
+          <input id="q" type="text" inputmode="latin-name" autocomplete="off" spellcheck="false" aria-describedby="busca-help" />
+          <div id="busca-help" class="small">
+            Ex.: <span class="kbd">Escorel</span>, <span class="kbd">Vivências</span>, <span class="kbd">Saint-Exupéry</span>, <span class="kbd">O’Neill</span>.
           </div>
         </div>
-
-        <div class="grid-3">
-          <div class="field">
-            <label for="entrada">Entrada usada</label>
-            <output id="entrada" class="readonly-box" aria-live="polite" aria-atomic="true">—</output>
-          </div>
-          <div class="field">
-            <label for="normalizada">Chave normalizada</label>
-            <output id="normalizada" class="readonly-box" aria-live="polite" aria-atomic="true">—</output>
-          </div>
-          <div class="field">
-            <label for="explicacao">Regra aplicada</label>
-            <output id="explicacao" class="readonly-box" aria-live="polite" aria-atomic="true">—</output>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button id="btnBuscar" class="btn primary" type="button">Buscar</button>
-          <button id="btnLimpar" class="btn" type="reset">Limpar</button>
-        </div>
-      </form>
-
-      <div class="answer" role="region" aria-live="polite" aria-label="Resultado">
-        <div class="ansrow">
-          <div class="result-code" aria-describedby="code-help">
-            <div id="codigo" class="bigcode" data-empty>—</div>
-            <div id="code-help" class="muted small">Código Cutter (letra + 3 dígitos)</div>
-          </div>
-          <div class="result-key">
-            <div class="label">Entrada da tabela</div>
-            <div id="chave" class="keytext">—</div>
-          </div>
-          <div class="copy">
-            <button id="btnCopiar" class="btn" type="button" disabled>Copiar</button>
-          </div>
-        </div>
-        <div id="vizinhos" class="neighbors" aria-label="Próximos na tabela"></div>
       </div>
-    </section>
 
-    <section class="panel help" aria-labelledby="acessibilidade-title">
-      <h2 id="acessibilidade-title">Acessibilidade</h2>
-      <ul class="muted">
-        <li>Foco visível em todos os controles.</li>
-        <li>Leitura anunciada de resultados (<code>aria-live</code>).</li>
-        <li>Alto contraste e tamanhos de clique confortáveis.</li>
-        <li>Layout sem colunas obrigatórias para leitura linear; em telas menores, os blocos se empilham.</li>
-      </ul>
+      <div class="answer" id="answer" role="region" aria-live="polite" aria-label="Resposta da busca">
+        <h3>Resposta</h3>
+        <div class="ansrow">
+          <div>
+            <div class="bigcode" id="bestCode" aria-live="polite">—</div>
+            <div class="bigkey" id="bestKey">Digite para ver o resultado…</div>
+          </div>
+          <div>
+            <button class="copy" id="copyBtn" type="button" aria-label="Copiar cutter" disabled>Copiar cutter</button>
+          </div>
+        </div>
+        <div class="small" id="explain"></div>
+        <div class="small" id="wvWarn" style="display:none;">
+          Este visualizador pode bloquear JavaScript. Abra em um navegador (Chrome, Firefox, Safari) para usar a busca.
+        </div>
+      </div>
+
+      <div id="results" role="region" aria-live="polite" aria-label="Alternativas"></div>
     </section>
   </main>
 
-  <footer class="wrap footer small" role="contentinfo">
-    <p>Interface por <strong>Bernardo Vechi</strong>. Lógica baseada em Cutter / Cutter–Sanborn. Dados em <code>data/cutter-sanborn.json</code>.</p>
+  <footer role="contentinfo">
+    Desenvolvido por <strong>Bernardo Vechi</strong><br/>
+    Segue diretrizes de acessibilidade WCAG 2.1 e governo eletrônico.
   </footer>
 
-  <noscript>
-    <div class="wrap noscript">Este aplicativo precisa de JavaScript para realizar a busca na tabela Cutter–Sanborn.</div>
-  </noscript>
-
-  <!-- Aplicação: módulos separados -->
+  <!-- Loader: conecta layout + lógica + dataset externo -->
   <script type="module">
-    import * as Normalizer from './src/normalizer.js';
-    import * as Matcher from './src/matcher.js';
-    import { setupUI } from './src/ui.js';
+    import { Normalizer } from './normalizer.js';
+    import { Matcher } from './matcher.js';
+    import { setupUI } from './ui.js';
 
-    // Carrega dataset e inicializa UI
-    try {
-      const res = await fetch('./data/cutter-sanborn.json', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Falha ao carregar data/cutter-sanborn.json');
-      const table = await res.json(); // [{key, code}, ...]
-      const index = Matcher.buildIndex(table, Normalizer);
-      setupUI({ index, Normalizer, Matcher });
-    } catch (err) {
-      console.error(err);
-      const codigo = document.getElementById('codigo');
-      const chave  = document.getElementById('chave');
-      const explic = document.getElementById('explicacao');
-      if (codigo) codigo.textContent = '—';
-      if (chave) chave.textContent = 'Erro ao carregar dataset';
-      if (explic) explic.textContent = 'Verifique se o arquivo JSON está em data/cutter-sanborn.json';
-    }
+    // carrega dataset externo (o seu JSON completo com 12.320 entradas)
+    const resp = await fetch('./data/cutter-sanborn.json');
+    const DATA = await resp.json();
+
+    // constrói o índice com a normalização de AUTOR por padrão
+    const index = Matcher.buildIndex(DATA, Normalizer.fromAuthor);
+
+    // inicializa a UI (usa os IDs do layout acima)
+    setupUI({ index, Normalizer, Matcher });
+
+    // fallback para webviews que bloqueiam JS
+    const ok = typeof DATA?.length === 'number';
+    document.getElementById('wvWarn').style.display = ok ? 'none' : 'block';
   </script>
 </body>
 </html>

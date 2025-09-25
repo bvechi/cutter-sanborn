@@ -82,18 +82,14 @@
 
   <!-- Loader: conecta layout + lógica + dataset externo -->
   <script type="module">
-    import { Normalizer } from './normalizer.js';
-    import { Matcher } from './matcher.js';
-    import { setupUI } from './ui.js';
+    import * as Normalizer from './normalizer.js';
+    import * as Matcher from './matcher.js';
+    import { setupUI } from './ui.js';  
 
     // carrega dataset externo (o seu JSON completo com 12.320 entradas)
-    const resp = await fetch('./data/cutter-sanborn.json');
+    const resp = await fetch('./data/cutter-sanborn.json', { cache: 'no-store' });
     const DATA = await resp.json();
-
-    // constrói o índice com a normalização de AUTOR por padrão
-    const index = Matcher.buildIndex(DATA, Normalizer.fromAuthor);
-
-    // inicializa a UI (usa os IDs do layout acima)
+    const index = Matcher.buildIndex(DATA, Normalizer);
     setupUI({ index, Normalizer, Matcher });
 
     // fallback para webviews que bloqueiam JS
